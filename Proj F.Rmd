@@ -1,0 +1,163 @@
+---
+title: "Proj F"
+author: "Qing Guo"
+date: "12/11/2018"
+output: html_document
+---
+
+```{r}
+###                                             ###
+### 15.459 Financial Data Science and Computing ###
+###             Youssef Berrada                 ###
+###             yberrada@mit.edu                ###
+###                Fall 2018                    ###
+
+library('dplyr')
+library(data.table)
+library('ggplot2')
+library('xtable')
+library('xts')
+
+# Data Acquisition
+df = fread('/Users/Vanessa/Documents/MIT/2018 Fall/data/homework/Proj F/AIG_1.csv')
+
+colnames(df)<-c('symbol','date','time','tmin','tmax','tminute','numtrades','pavg','vwap','pmin','pmax','pstd','q','qavg')
+
+# Data Pre-processing
+summary(df)
+str(df)
+# ...
+
+# Data Analysis
+Q<-df %>% group_by(date,symbol) %>% summarise(HIGH = max(pmax),OPEN = first(pavg), LOW = min(pmin), CLOSE = last(pavg), Volume = sum(q))
+Q
+xtable(Q)
+Q$date = as.Date(Q$date,"%m/%d/%Y")
+```
+
+```{r}
+#Q_xts = as.xts(Q$HIGH,Q$date)
+
+df_2 = fread('/Users/Vanessa/Documents/MIT/2018 Fall/data/homework/Proj F/AIG_2.csv')
+
+colnames(df_2)<-c('symbol','date','time','tmin','tmax','tminute','numtrades','pavg','vwap','pmin','pmax','pstd','q','qavg')
+
+Q_2<-df_2 %>% group_by(date,symbol) %>% summarise(HIGH = max(pmax),OPEN = first(pavg), LOW = min(pmin), CLOSE = last(pavg), VOLUME = sum(q))
+Q_2
+```
+
+```{r}
+
+df_3 = fread('/Users/Vanessa/Documents/MIT/2018 Fall/data/homework/Proj F/AIG_3.csv')
+
+colnames(df_3)<-c('symbol','date','time','tmin','tmax','tminute','numtrades','pavg','vwap','pmin','pmax','pstd','q','qavg')
+
+Q_3<-df_3 %>% group_by(date,symbol) %>% summarise(HIGH = max(pmax),OPEN = first(pavg), LOW = min(pmin), CLOSE = last(pavg), VOLUME = sum(q))
+Q_3
+
+```
+
+
+```{r}
+
+df_DIA1 = fread('/Users/Vanessa/Documents/MIT/2018 Fall/data/homework/Proj F/DIA_1.csv')
+
+colnames(df_DIA1)<-c('symbol','date','time','tmin','tmax','tminute','numtrades','pavg','vwap','pmin','pmax','pstd','q','qavg')
+
+Q_DIA1 <-df_DIA1 %>% group_by(date,symbol) %>% summarise(HIGH = max(pmax),OPEN = first(pavg), LOW = min(pmin), CLOSE = last(pavg), VOLUME = sum(q))
+Q_DIA1
+
+```
+
+
+```{r}
+
+df_DIA2 = fread('/Users/Vanessa/Documents/MIT/2018 Fall/data/homework/Proj F/DIA_2.csv')
+
+colnames(df_DIA2)<-c('symbol','date','time','tmin','tmax','tminute','numtrades','pavg','vwap','pmin','pmax','pstd','q','qavg')
+
+Q_DIA2 <-df_DIA2 %>% group_by(date,symbol) %>% summarise(HIGH = max(pmax),OPEN = first(pavg), LOW = min(pmin), CLOSE = last(pavg), VOLUME = sum(q))
+Q_DIA2
+
+
+```
+
+
+```{r}
+df_DIA3 = fread('/Users/Vanessa/Documents/MIT/2018 Fall/data/homework/Proj F/DIA_3.csv')
+
+colnames(df_DIA3)<-c('symbol','date','time','tmin','tmax','tminute','numtrades','pavg','vwap','pmin','pmax','pstd','q','qavg')
+
+Q_DIA3 <-df_DIA3 %>% group_by(date,symbol) %>% summarise(HIGH = max(pmax),OPEN = first(pavg), LOW = min(pmin), CLOSE = last(pavg), VOLUME = sum(q))
+Q_DIA3
+```
+
+
+```{r}
+df_KO1 = fread('/Users/Vanessa/Documents/KO1.csv')
+
+colnames(df_KO1)<-c('symbol','date','time','tmin','tmax','tminute','numtrades','pavg','vwap','pmin','pmax','pstd','q','qavg')
+
+Q_KO1 <-df_KO1 %>% group_by(date,symbol) %>% summarise(HIGH = max(pmax),OPEN = first(pavg), LOW = min(pmin), CLOSE = last(pavg), VOLUME = sum(q))
+Q_KO1
+
+```
+
+
+```{r}
+df_KO2 = fread('/Users/Vanessa/Documents/KO2.csv')
+
+colnames(df_KO2)<-c('symbol','date','time','tmin','tmax','tminute','numtrades','pavg','vwap','pmin','pmax','pstd','q','qavg')
+
+Q_KO2 <-df_KO2 %>% group_by(date,symbol) %>% summarise(HIGH = max(pmax),OPEN = first(pavg), LOW = min(pmin), CLOSE = last(pavg), VOLUME = sum(q))
+Q_KO2
+
+```
+
+```{r}
+df_KO3 = fread('/Users/Vanessa/Documents/MIT/2018 Fall/data/homework/Proj F/KO_3.csv')
+
+colnames(df_KO3)<-c('symbol','date','time','tmin','tmax','tminute','numtrades','pavg','vwap','pmin','pmax','pstd','q','qavg')
+
+Q_KO3 <-df_KO3 %>% group_by(date,symbol) %>% summarise(HIGH = max(pmax),OPEN = first(pavg), LOW = min(pmin), CLOSE = last(pavg), VOLUME = sum(q))
+Q_KO3
+
+```
+
+
+```{r}
+df_PG1 = fread('/Users/Vanessa/Documents/MIT/2018 Fall/data/homework/Proj F/PG_1.csv')
+
+colnames(df_PG1)<-c('symbol','date','time','tmin','tmax','tminute','numtrades','pavg','vwap','pmin','pmax','pstd','q','qavg')
+
+Q_PG1 <-df_PG1 %>% group_by(date,symbol) %>% summarise(HIGH = max(pmax),OPEN = first(pavg), LOW = min(pmin), CLOSE = last(pavg), VOLUME = sum(q))
+Q_PG1
+```
+
+
+
+
+```{r}
+df_PG2 = fread('/Users/Vanessa/Documents/MIT/2018 Fall/data/homework/Proj F/PG_2.csv')
+
+colnames(df_PG2)<-c('symbol','date','time','tmin','tmax','tminute','numtrades','pavg','vwap','pmin','pmax','pstd','q','qavg')
+
+Q_PG2 <-df_PG2 %>% group_by(date,symbol) %>% summarise(HIGH = max(pmax),OPEN = first(pavg), LOW = min(pmin), CLOSE = last(pavg), VOLUME = sum(q))
+Q_PG2
+
+```
+
+
+```{r}
+df_PG3 = fread('/Users/Vanessa/Documents/MIT/2018 Fall/data/homework/Proj F/PG_3.csv')
+
+colnames(df_PG3)<-c('symbol','date','time','tmin','tmax','tminute','numtrades','pavg','vwap','pmin','pmax','pstd','q','qavg')
+
+Q_PG3 <-df_PG3 %>% group_by(date,symbol) %>% summarise(HIGH = max(pmax),OPEN = first(pavg), LOW = min(pmin), CLOSE = last(pavg), VOLUME = sum(q))
+Q_PG3
+
+```
+
+
+
+
