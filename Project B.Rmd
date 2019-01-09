@@ -1,0 +1,421 @@
+---
+title: "Project B"
+author: "Qing Guo"
+date: "9/26/2018"
+output: html_document
+---
+load in the data
+merge the data
+```{r}
+setwd("/Users/Vanessa/Documents/MIT/2018 Fall/data/homework/Proj B")
+data1 <- read.csv("early_sample.csv")
+#data1$d <- as.Date(data1$d, format = "%m/%d/%Y")
+data1 <- data1[872162:1048110, ]
+data2 <- read.csv("late_sample.csv")
+#data2$d <- as.Date(data2$d, format = "%m/%d/%Y")
+data_frame <- rbind(data1, data2)
+```
+
+
+
+```{r}
+library("tsoutliers")
+returns <- ts(data_frame$r)
+outliers <- tso(returns)
+data_frame[]outliers$times
+dat.ts.gbp <- ts(data.reg.gbp$CR, frequency = 1)
+data.ts.outliers.gbp <- tso(dat.ts.gbp)
+plot(data.ts.outliers.gbp)
+data.reg.gbp$Date[data.ts.outliers.gbp$times] 
+```
+
+
+```{r}
+
+
+```
+
+
+
+```{r}
+
+
+```
+
+
+
+#k=1
+#long, short
+
+```{r}
+library(dplyr)
+data_frame$d <- as.Date(data_frame$d, format = "%d/%m/%Y")
+df_mean = data_frame %>%
+  dplyr::group_by(d)%>%
+  select(ticker,r)%>%
+  summarise(mean(r))
+#df_mean_date <- df_mean %>% arrange(d)
+#k=1
+proj_return <- c()
+#convert to function
+for (i in (1: length(unique(data_frame$d)))){
+  
+  x <- data_frame %>% filter(d %in% df_mean$d[i]) %>% mutate(weights_without_c = df_mean$`mean(r)`[i]-r)
+x_pos <- x %>% filter(weights_without_c >= 0 )
+x_pos <- x_pos %>% mutate(weights = (x_pos$weights_without_c/sum(x_pos$weights_without_c))) #weights do not need to be divided into positive and negative -> use weights to 2/abs(sum)
+x_neg <- x %>% filter(weights_without_c < 0 )
+x_neg <- x_neg %>% mutate(weights = -(x_neg$weights_without_c/sum(x_neg$weights_without_c)))
+x_1 <- rbind(x_pos, x_neg)
+x_unweighted_nextday_return <- data_frame %>% filter(d %in% df_mean$d[i+1]) 
+x_merge <- merge(x_1, x_unweighted_nextday_return, by = "ticker")
+x_merge$weighted <- x_merge$r.y * x_merge$weights
+x_merge <- x_merge[ , -c(3:9,13)]
+proj_return[i] <- sum(x_merge$weighted)
+
+}
+
+
+return_k1 <- data.frame(df_mean$d[2:1511], proj_return[1:1510])
+weights1$pid <- 
+
+#don't forget to create time lag k, MIT id, version Id
+```
+
+
+```{r}
+#k=2
+
+#df_mean_date <- df_mean %>% arrange(d)
+proj_return2 <- c()
+#convert to function
+for (i in (2: length(unique(data_frame$d)))){
+  
+  x <- data_frame %>% filter(d %in% df_mean$d[i-1]) %>% mutate(weights_without_c = df_mean$`mean(r)`[i-1]-r) 
+x_pos <- x %>% filter(weights_without_c >= 0 )
+x_pos <- x_pos %>% mutate(weights = (x_pos$weights_without_c/sum(x_pos$weights_without_c)))
+x_neg <- x %>% filter(weights_without_c < 0 )
+x_neg <- x_neg %>% mutate(weights = -(x_neg$weights_without_c/sum(x_neg$weights_without_c)))
+x_1 <- rbind(x_pos, x_neg)
+x_unweighted_nextday_return <- data_frame %>% filter(d %in% df_mean$d[i+1]) 
+x_merge <- merge(x_1, x_unweighted_nextday_return, by = "ticker")
+x_merge$weighted <- x_merge$r.y * x_merge$weights
+x_merge <- x_merge[ , -c(3:9,13)]
+proj_return2[i] <- sum(x_merge$weighted)
+  }
+
+return_k2 <- data.frame(df_mean$d[3:1511], proj_return2[1:(1511-2)])
+
+```
+```{r}
+#k=3
+
+#df_mean_date <- df_mean %>% arrange(d)
+proj_return3 <- c()
+#convert to function
+for (i in (3: length(unique(data_frame$d)))){
+  
+  x <- data_frame %>% filter(d %in% df_mean$d[i-2]) %>% mutate(weights_without_c = df_mean$`mean(r)`[i-2]-r) 
+x_pos <- x %>% filter(weights_without_c >= 0 )
+x_pos <- x_pos %>% mutate(weights = (x_pos$weights_without_c/sum(x_pos$weights_without_c)))
+x_neg <- x %>% filter(weights_without_c < 0 )
+x_neg <- x_neg %>% mutate(weights = -(x_neg$weights_without_c/sum(x_neg$weights_without_c)))
+x_1 <- rbind(x_pos, x_neg)
+x_unweighted_nextday_return <- data_frame %>% filter(d %in% df_mean$d[i+1]) 
+x_merge <- merge(x_1, x_unweighted_nextday_return, by = "ticker")
+x_merge$weighted <- x_merge$r.y * x_merge$weights
+x_merge <- x_merge[ , -c(3:9,13)]
+proj_return3[i] <- sum(x_merge$weighted)
+  }
+
+return_k3 <- data.frame(df_mean$d[4:1511], proj_return3[1:(1511-3)])
+```
+
+```{r}
+#k=4
+proj_return4 <- c()
+#convert to function
+for (i in (4: length(unique(data_frame$d)))){
+  
+  x <- data_frame %>% filter(d %in% df_mean$d[i-3]) %>% mutate(weights_without_c = df_mean$`mean(r)`[i-3]-r) 
+x_pos <- x %>% filter(weights_without_c >= 0 )
+x_pos <- x_pos %>% mutate(weights = (x_pos$weights_without_c/sum(x_pos$weights_without_c)))
+x_neg <- x %>% filter(weights_without_c < 0 )
+x_neg <- x_neg %>% mutate(weights = -(x_neg$weights_without_c/sum(x_neg$weights_without_c)))
+x_1 <- rbind(x_pos, x_neg)
+x_unweighted_nextday_return <- data_frame %>% filter(d %in% df_mean$d[i+1]) 
+x_merge <- merge(x_1, x_unweighted_nextday_return, by = "ticker")
+x_merge$weighted <- x_merge$r.y * x_merge$weights
+x_merge <- x_merge[ , -c(3:9,13)]
+proj_return4[i] <- sum(x_merge$weighted)
+  }
+
+return_k4 <- data.frame(df_mean$d[5:1511], proj_return4[1:(1511-4)])
+
+ 
+``` 
+
+  
+```{r}
+#k=5
+proj_return5 <- c()
+#convert to function
+for (i in (5: length(unique(data_frame$d)))){
+  
+  x <- data_frame %>% filter(d %in% df_mean$d[i-4]) %>% mutate(weights_without_c = df_mean$`mean(r)`[i-4]-r) 
+x_pos <- x %>% filter(weights_without_c >= 0 )
+x_pos <- x_pos %>% mutate(weights = (x_pos$weights_without_c/sum(x_pos$weights_without_c)))
+x_neg <- x %>% filter(weights_without_c < 0 )
+x_neg <- x_neg %>% mutate(weights = -(x_neg$weights_without_c/sum(x_neg$weights_without_c)))
+x_1 <- rbind(x_pos, x_neg)
+x_unweighted_nextday_return <- data_frame %>% filter(d %in% df_mean$d[i+1]) 
+x_merge <- merge(x_1, x_unweighted_nextday_return, by = "ticker")
+x_merge$weighted <- x_merge$r.y * x_merge$weights
+x_merge <- x_merge[ , -c(3:9,13)]
+proj_return5[i] <- sum(x_merge$weighted)
+  }
+
+return_k5 <- data.frame(df_mean$d[6:1511], proj_return5[1:(1511-5)])
+
+
+```
+
+
+
+```{r}
+#k=6
+proj_return6 <- c()
+#convert to function
+for (i in (6: length(unique(data_frame$d)))){
+  
+  x <- data_frame %>% filter(d %in% df_mean$d[i-5]) %>% mutate(weights_without_c = df_mean$`mean(r)`[i-5]-r) 
+x_pos <- x %>% filter(weights_without_c >= 0 )
+x_pos <- x_pos %>% mutate(weights = (x_pos$weights_without_c/sum(x_pos$weights_without_c)))
+x_neg <- x %>% filter(weights_without_c < 0 )
+x_neg <- x_neg %>% mutate(weights = -(x_neg$weights_without_c/sum(x_neg$weights_without_c)))
+x_1 <- rbind(x_pos, x_neg)
+x_unweighted_nextday_return <- data_frame %>% filter(d %in% df_mean$d[i+1]) 
+x_merge <- merge(x_1, x_unweighted_nextday_return, by = "ticker")
+x_merge$weighted <- x_merge$r.y * x_merge$weights
+x_merge <- x_merge[ , -c(3:9,13)]
+proj_return6[i] <- sum(x_merge$weighted)
+  }
+return_k6 <- data.frame(df_mean$d[7:1511], proj_return6[1:(1511-6)])
+```
+
+
+```{r}
+#k=7
+proj_return7 <- c()
+#convert to function
+for (i in (7: length(unique(data_frame$d)))){
+  
+  x <- data_frame %>% filter(d %in% df_mean$d[i-6]) %>% mutate(weights_without_c = df_mean$`mean(r)`[i-6]-r) 
+x_pos <- x %>% filter(weights_without_c >= 0 )
+x_pos <- x_pos %>% mutate(weights = (x_pos$weights_without_c/sum(x_pos$weights_without_c)))
+x_neg <- x %>% filter(weights_without_c < 0 )
+x_neg <- x_neg %>% mutate(weights = -(x_neg$weights_without_c/sum(x_neg$weights_without_c)))
+x_1 <- rbind(x_pos, x_neg)
+x_unweighted_nextday_return <- data_frame %>% filter(d %in% df_mean$d[i+1]) 
+x_merge <- merge(x_1, x_unweighted_nextday_return, by = "ticker")
+x_merge$weighted <- x_merge$r.y * x_merge$weights
+x_merge <- x_merge[ , -c(3:9,13)]
+proj_return7[i] <- sum(x_merge$weighted)
+  }
+return_k7 <- data.frame(df_mean$d[8:1511], proj_return7[1:(1511-7)])
+```
+  
+  
+  #data_frame, d == df_mean_date[1])
+
+```{r}
+#k=8
+proj_return8 <- c()
+#convert to function
+for (i in (8: length(unique(data_frame$d)))){
+  
+  x <- data_frame %>% filter(d %in% df_mean$d[i-7]) %>% mutate(weights_without_c = df_mean$`mean(r)`[i-7]-r) 
+x_pos <- x %>% filter(weights_without_c >= 0 )
+x_pos <- x_pos %>% mutate(weights = (x_pos$weights_without_c/sum(x_pos$weights_without_c)))
+x_neg <- x %>% filter(weights_without_c < 0 )
+x_neg <- x_neg %>% mutate(weights = -(x_neg$weights_without_c/sum(x_neg$weights_without_c)))
+x_1 <- rbind(x_pos, x_neg)
+x_unweighted_nextday_return <- data_frame %>% filter(d %in% df_mean$d[i+1]) 
+x_merge <- merge(x_1, x_unweighted_nextday_return, by = "ticker")
+x_merge$weighted <- x_merge$r.y * x_merge$weights
+x_merge <- x_merge[ , -c(3:9,13)]
+proj_return8[i] <- sum(x_merge$weighted)
+  }
+return_k8 <- data.frame(df_mean$d[9:1511], proj_return8[1:(1511-8)])
+```
+
+```{r}
+#K=9
+proj_return9 <- c()
+#convert to function
+for (i in (9: length(unique(data_frame$d)))){
+  
+  x <- data_frame %>% filter(d %in% df_mean$d[i-8]) %>% mutate(weights_without_c = df_mean$`mean(r)`[i-8]-r) 
+x_pos <- x %>% filter(weights_without_c >= 0 )
+x_pos <- x_pos %>% mutate(weights = (x_pos$weights_without_c/sum(x_pos$weights_without_c)))
+x_neg <- x %>% filter(weights_without_c < 0 )
+x_neg <- x_neg %>% mutate(weights = -(x_neg$weights_without_c/sum(x_neg$weights_without_c)))
+x_1 <- rbind(x_pos, x_neg)
+x_unweighted_nextday_return <- data_frame %>% filter(d %in% df_mean$d[i+1]) 
+x_merge <- merge(x_1, x_unweighted_nextday_return, by = "ticker")
+x_merge$weighted <- x_merge$r.y * x_merge$weights
+x_merge <- x_merge[ , -c(3:9,13)]
+proj_return9[i] <- sum(x_merge$weighted)
+  }
+return_k9 <- data.frame(df_mean$d[10:1511], proj_return10[1:(1511-9)])##
+```
+
+```{r}
+#K=10
+proj_return10 <- c()
+#convert to function
+for (i in (10: length(unique(data_frame$d)))){
+  
+  x <- data_frame %>% filter(d %in% df_mean$d[i-9]) %>% mutate(weights_without_c = df_mean$`mean(r)`[i-9]-r) 
+x_pos <- x %>% filter(weights_without_c >= 0 )
+x_pos <- x_pos %>% mutate(weights = (x_pos$weights_without_c/sum(x_pos$weights_without_c)))
+x_neg <- x %>% filter(weights_without_c < 0 )
+x_neg <- x_neg %>% mutate(weights = -(x_neg$weights_without_c/sum(x_neg$weights_without_c)))
+x_1 <- rbind(x_pos, x_neg)
+x_unweighted_nextday_return <- data_frame %>% filter(d %in% df_mean$d[i+1]) 
+x_merge <- merge(x_1, x_unweighted_nextday_return, by = "ticker")
+x_merge$weighted <- x_merge$r.y * x_merge$weights
+x_merge <- x_merge[ , -c(3:9,13)]
+proj_return10[i] <- sum(x_merge$weighted)
+  }
+return_k10 <- data.frame(df_mean$d[11:1511], proj_return10[1:(1511-10)]) #lag of 10 days starts from t = 1, remove the last return b/c it uses return out of bound
+```
+
+
+```{r}
+annual_mean <- c(mean(return_k1$proj_return.1.1510.)*252,
+mean(return_k2$proj_return2.1.1510.)*252,
+mean(return_k3$proj_return3.1.1510.)*252,
+mean(return_k4$proj_return4.1.1510.)*252,
+mean(return_k5$proj_return5.1.1510.)*252,
+mean(return_k6$proj_return6.1.1510.)*252,
+mean(return_k7$proj_return7.1.1510.)*252,
+mean(return_k8$proj_return8.1.1510.)*252,
+mean(return_k9$proj_return9.1.1510.)*252,
+mean(return_k10$proj_return10.1.1510.)*252)
+
+annual_volatility <- c(sd(return_k1$proj_return.1.1510.)*sqrt(252),
+sd(return_k2$proj_return2.1.1510.)*sqrt(252),
+sd(return_k3$proj_return3.1.1510.)*sqrt(252),
+sd(return_k4$proj_return4.1.1510.)*sqrt(252),
+sd(return_k5$proj_return5.1.1510.)*sqrt(252),
+sd(return_k6$proj_return6.1.1510.)*sqrt(252),
+sd(return_k7$proj_return7.1.1510.)*sqrt(252),
+sd(return_k8$proj_return8.1.1510.)*sqrt(252),
+sd(return_k9$proj_return9.1.1510.)*sqrt(252),
+sd(return_k10$proj_return10.1.1510.)*sqrt(252))
+
+sharperatio <- annual_mean/annual_volatility  
+ lag <- rbind(annual_mean, annual_volatility, sharperatio) 
+colnames(lag) <- c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
+```
+
+
+```{r}
+#Realistically, transaction cost that incurs during the trading of stocks as well as the bid-ask price difference will create a gap between the actual return and the simulated return. As the  trading frequency of this strategy is fairly high, the cost is non-trivial.  
+
+  
+
+
+```
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+
+
+
+
+
+```{r}
+
+#df_mean_1 <- df_mean_1 %>% as.Date(d, format ="%m/%d/%Y") %>% arrange(d)
+
+#df_mean <- df_mean %>% as.Date(d, format ="%m/%d/%Y") %>% arrange(d)
+#2775 days
+
+
+
+```
+
+#detecting outliers
+```{r}
+library("tsoutliers")
+dat.ts.return <- ts(data.reg.zar$CR, frequency = 1)
+data.ts.outliers.zar <- tso(dat.ts.zar)
+plot(data.ts.outliers.zar)
+data.reg.eur$Date[data.ts.outliers$times] 
+```
+
+```{r}
+library("tsoutliers")
+setwd("/Users/Vanessa/Documents/MIT/2018 Fall/data/homework/Proj B")
+data1 <- read.csv("return_data.csv")
+tsmean <- ts(data1$mean.r.)
+outliers_market <- tso(tsmean)
+plot(outliers_market)
+data1$d[outliers_market$times]
+t.test(x <- data1$strat_r[outliers_market$times], y <- data1$strat_r)
+```
+```{r}
+data_frame
+
+```
+
+
+
+#k=1
+#long, short
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+```{r}
+
+```
